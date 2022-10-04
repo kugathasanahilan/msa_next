@@ -6,7 +6,7 @@ function Home () {
   const [bl_no, setBl_no] = useState('');
   const [data, setData] = useState('');
   function getBl() {
-    axios.get(`http://infoshipco.net/msa_col/api/bl_tracking.php?bl_no=${bl_no}`)
+    axios.get(`//infoshipco.net/msa_col/api/bl_tracking.php?bl_no=${bl_no}`)
     .then(function (response) {                 
       setData(response.data); 
     })
