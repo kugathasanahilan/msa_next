@@ -24,8 +24,8 @@ function Home () {
         <div className="col-md-12">
             <div className="card">
                 <div className="card-header">
-                    <div className="row g-1">
-                        <div className="col-auto">
+                    <div className="row g-3">
+                        <div className="col">
                         <input
                             type="text"
                             className='form-control'
@@ -35,7 +35,7 @@ function Home () {
                             onKeyUp={() => {getBl()}}
                         />  
                         </div>
-                        <div className="col-auto">
+                        <div className="col">
                             <button className="btn btn-danger" type='button' onClick={getBl}>Track BL</button>
                         </div>
                     </div>
