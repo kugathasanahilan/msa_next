@@ -133,11 +133,7 @@ function Home () {
                   ))}
                   </tbody>
                   </table>
-  
-          </div>
-    </div>  
-    </div>  : null}
-        {data?.ts_details?.ts==true ? <div className="row">
+                  {data?.ts_details?.ts==true ?
     <div className="table-responsive col-sm-12">
             <table className="table table-bordered table-sm table-hover table-striped align-middle ">
                 <tr>
@@ -151,20 +147,25 @@ function Home () {
                     <td className="fw-bold">POL</td>
                     <td className="fw-bold">POD</td>
                 </tr>
-                {data?.ts_details?.map((ts, index) => (
-                <tr key={index}>
-                    <td>{ts?.ts_status}</td>
-                    <td>{ts?.ts_vessel}</td>
-                    <td>{ts?.voyage}</td>
-                    <td>{ts?.voyage_date}</td>
-                    <td>{ts?.ts_pol}</td>
-                    <td>{ts?.ts_pod}</td>
+                <tbody>
+                <tr>
+                    <td>{data?.ts_details?.ts_status}</td>
+                    <td>{data?.ts_details?.ts_vessel}</td>
+                    <td>{data?.ts_details?.voyage}</td>
+                    <td>{data?.ts_details?.voyage_date}</td>
+                    <td>{data?.ts_details?.ts_pol}</td>
+                    <td>{data?.ts_details?.ts_pod}</td>
                 </tr>
-                ))}
+                </tbody>
             </table>
             <br/>
         </div>
-    </div> : null}
+  : null}
+          </div>
+        
+    </div>  
+    </div>  : null}
+       
     </div>  
     </div>  
     </div>  
