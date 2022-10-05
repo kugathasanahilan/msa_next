@@ -98,7 +98,8 @@ function Home () {
           </table>
           <br/>
       </div>
-      <div className="table-responsive col-sm-9">
+      <div className="col-sm-9">
+        <div className='table-responsive'> 
           <table className="table table-bordered table-sm table-hover table-striped">
                   <thead className="bg-light">
                   <tr>
@@ -133,6 +134,7 @@ function Home () {
                   ))}
                   </tbody>
                   </table>
+                </div>
                   {data?.ts_details?.ts==true ?
     <div className="table-responsive col-sm-12">
             <table className="table table-bordered table-sm table-hover table-striped align-middle ">
