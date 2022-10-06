@@ -1,19 +1,49 @@
 import axios from 'axios'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import NavBar from "./components/NavBar";
 
 function Home () {
   const [bl_no, setBl_no] = useState('');
-  const [data, setData] = useState('');
+  const [data, setData] = useState([]);
+  const [api, setApi] = useState([]);
+  function getBranchApi() {
+    axios.get(`http://infoshipco.net/msa_soc/api/get_branches.php?request=branches`)
+        .then((res) => {
+            setApi(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+    useEffect (() => {
+        getBranchApi();
+      }, []);
+      console.log(api);
   function getBl() {
-    axios.get(`//infoshipco.net/msa_col/api/bl_tracking.php?bl_no=${bl_no}`)
-    .then(function (response) {                 
-      setData(response.data); 
+    //clear the data
+    setData([]);
+    api.map((branch,item) => {
+        axios.get(`${branch.api}bl_tracking.php?bl_no=${bl_no}`)
+        .then(function (response) { 
+            //add branch to response
+            if(response.data.results_details.exists==true){
+            response.data.branch = branch.branch_name;  
+            //ADD EACH RESPONSE TO DATA              
+            setData(data => [...data, response.data]); 
+            }
+            console.log('data',data)
+        })
+        .catch(function (error) {
+            console.log(error);
+        }); 
     })
-    .catch(function (error) {
-      console.log(error);
-    }); 
+
   } 
+  function validateBl_no(blNo) {
+    if (blNo.length > 3) {
+        setBl_no(blNo);
+    }
+  }
     // render data
     return (
       <>
@@ -30,9 +60,7 @@ function Home () {
                             type="text"
                             className='form-control'
                             placeholder='Enter BL No'
-                            value={bl_no}
-                            onChange={e => { setBl_no(e.currentTarget.value); }}
-                            onKeyUp={() => {getBl()}}
+                            onChange={e => { validateBl_no(e.target.value); }}
                         />  
                         </div>
                         <div className="col">
@@ -41,10 +69,12 @@ function Home () {
                     </div>
                     </div>
             </div>
-    <br/>       
-  {data !== '' ? data?.results_details?.exists==false ? <div className="alert alert-danger text-center" role="alert">BL NOT FOUND</div> :
-  <div className="card-body">
-      <div className="bg-secondary text-white p-1 mb-2">BRANCH </div>
+    <br/>      
+
+  {data.length < 1  ? <div className="alert alert-danger text-center" role="alert">BL NOT FOUND {data.length}</div> :
+     data.map((item, index) => (
+  <div className="card-body" key={index}>
+      <div className="bg-secondary text-white p-1 mb-2">{item?.branch} BRANCH </div>
       <div className="row">
       <div className="table-responsive col-sm-3">
           <table className='table table-bordered table-hover table-sm table-striped'>
@@ -52,47 +82,47 @@ function Home () {
           <tbody>
               <tr>
                   <td className="fw-light">BL No</td>
-                  <td>{data?.bl_details?.bl_no }</td>
+                  <td>{item?.bl_details?.bl_no }</td>
               </tr>
                    <tr>
                       <td className="fw-light">Vessel Status</td>
-                      <td>{data?.bl_details?.vessel_status==1 ? <span className="text-success fw-bold">SAILED</span> : <span className="text-danger fw-bold">NOT SAILED</span> }</td>
+                      <td>{item?.bl_details?.vessel_status==1 ? <span className="text-success fw-bold">SAILED</span> : <span className="text-danger fw-bold">NOT SAILED</span> }</td>
                   </tr>
                   <tr>
                       <td className="fw-light">Date Of Issue</td>
-                      <td>{data?.bl_details?.date_of_issue }</td>
+                      <td>{item?.bl_details?.date_of_issue }</td>
                   </tr>
                <tr>
                   <td className="fw-light">BL Status</td>
-                  <td><span className="fw-bold">{data?.bl_details?.surrender_status }</span></td>
+                  <td><span className="fw-bold">{item?.bl_details?.surrender_status }</span></td>
               </tr>
               <tr>
                   <td className="fw-light">Vessel</td>
-                  <td>{data?.bl_details?.vessel }</td>
+                  <td>{item?.bl_details?.vessel }</td>
               </tr>
               <tr>
                   <td className="fw-light">Voyage</td>
-                  <td>{data?.bl_details?.voyage } </td>
+                  <td>{item?.bl_details?.voyage } </td>
               </tr>
               <tr>
                   <td className="fw-light">ETD</td>
-                  <td>{data?.bl_details?.voyage_date }</td>
+                  <td>{item?.bl_details?.voyage_date }</td>
               </tr>
               <tr>
                   <td className="fw-light">Port Of Loading</td>
-                  <td>{data?.bl_details?.pol }</td>
+                  <td>{item?.bl_details?.pol }</td>
               </tr>
               <tr>
                   <td className="fw-light">Port Of Discharge</td>
-                  <td>{data?.bl_details?.pod }</td>
+                  <td>{item?.bl_details?.pod }</td>
               </tr>
               <tr>
                   <td className="fw-light">Terminal</td>
-                  <td>{data?.bl_details?.terminal ? data?.bl_details?.terminal : 'N/A'}</td>
+                  <td>{item?.bl_details?.terminal ? item?.bl_details?.terminal : 'N/A'}</td>
               </tr>
               <tr>
                   <td className="fw-light">Invoice Status</td>
-                  <td>{data?.bl_details?.invoice_status ? data?.bl_details?.invoice_status : "N/A" }</td>
+                  <td>{item?.bl_details?.invoice_status ? item?.bl_details?.invoice_status : "N/A" }</td>
               </tr>
             </tbody>
           </table>
@@ -117,7 +147,7 @@ function Home () {
                   </tr>
                   </thead>
                   <tbody>
-                  {data?.bl_details?.container_details?.map((container, index) => (
+                  {item?.bl_details?.container_details?.map((container, index) => (
                        <tr key={index}>
                       <td className="fw-light">{index+1}</td>
                       <td className="fw-light">{container?.container_no}</td>
@@ -135,11 +165,12 @@ function Home () {
                   </tbody>
                   </table>
                 </div>
-                  {data?.ts_details?.ts==true ?
+                  {item?.ts_details?.ts==true ?
     <div className="table-responsive col-sm-12">
             <table className="table table-bordered table-sm table-hover table-striped align-middle ">
+                <thead className="bg-light">
                 <tr>
-                    <td className="fw-bold" colspan="6">TRANSHIPMENT CONNECTION DETAILS</td>
+                    <td className="fw-bold" colSpan="6">TRANSHIPMENT CONNECTION DETAILS</td>
                 </tr>
                 <tr>
                     <td className="fw-bold">Status</td>
@@ -149,14 +180,15 @@ function Home () {
                     <td className="fw-bold">POL</td>
                     <td className="fw-bold">POD</td>
                 </tr>
+                </thead>
                 <tbody>
                 <tr>
-                    <td>{data?.ts_details?.ts_status}</td>
-                    <td>{data?.ts_details?.ts_vessel}</td>
-                    <td>{data?.ts_details?.voyage}</td>
-                    <td>{data?.ts_details?.voyage_date}</td>
-                    <td>{data?.ts_details?.ts_pol}</td>
-                    <td>{data?.ts_details?.ts_pod}</td>
+                    <td>{item?.ts_details?.ts_status}</td>
+                    <td>{item?.ts_details?.ts_vessel}</td>
+                    <td>{item?.ts_details?.voyage}</td>
+                    <td>{item?.ts_details?.voyage_date}</td>
+                    <td>{item?.ts_details?.ts_pol}</td>
+                    <td>{item?.ts_details?.ts_pod}</td>
                 </tr>
                 </tbody>
             </table>
@@ -166,7 +198,7 @@ function Home () {
           </div>
         
     </div>  
-    </div>  : null}
+    </div>)) }
        
     </div>  
     </div>  
